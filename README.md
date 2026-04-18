@@ -43,6 +43,15 @@ This codebase is aligned to Topic E requirements:
 
 This project expects data to be **already extracted** (ZIP auto-extraction is disabled).
 
+### Data source and download location
+
+- Official CICIDS-2017 dataset page (UNB CIC):
+  - [CICIDS-2017 Dataset](https://www.unb.ca/cic/datasets/ids-2017.html)
+- Dataset index page (UNB CIC):
+  - [CIC Datasets Index](https://www.unb.ca/cic/datasets/)
+
+Download the CICIDS-2017 CSV archives from the official UNB pages above, then extract them locally before running this project.
+
 Place CSV files under:
 
 - `data/cicids/`
@@ -50,6 +59,22 @@ Place CSV files under:
 Recommended source file family for this project:
 
 - `MachineLearningCSV` (preferred)
+
+Expected layout example:
+
+```text
+data/
+  cicids/
+    MachineLearningCSV/
+      Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+      Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+      ...
+```
+
+Quick validation:
+
+- Ensure at least one `.csv` exists under `data/cicids/`
+- Ensure the label column is available (default expected name: `Label` or ` Label`)
 
 ## 4. Environment Setup
 

@@ -22,6 +22,7 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+.ipynb_checkpoints/
 
 # Project runtime data and inputs (root only; report/artifacts may be a symlink for Markdown previews)
 /data/
