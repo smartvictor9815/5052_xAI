@@ -8,7 +8,7 @@
 - **Course:** SEHS5052 AI-driven Cybersecurity Management  
 - **Topic:** Topic E — Explainable AI (XAI) for Security Operations Centre Decision Support  
 - **Group Members:** `Name - Student ID` (fill for all members)  
-- **Google Colab Link (Viewer):** `REPLACE_WITH_PUBLIC_COLAB_LINK`  
+- **Google Colab Link (Viewer):** [SEHS5052_Group Project_Group10.ipynb](https://drive.google.com/file/d/19vEltqTcCUo41ROCJEFT-MbA2pFrHumb/view?usp=sharing)  
 - **Submission note:** verify the Colab link opens in private/incognito mode without sign-in.
 
 ---
