@@ -139,12 +139,12 @@ The preprocessing flow is implemented in the project's data and model modules:
 
 **Figure 1. Class Distribution**
 
-![Figure 1. Class distribution](file:///Users/victor/xwork/xAI/artifacts/figures/eda_class_distribution.png)
+![Figure 1. Class distribution](../artifacts/figures/eda_class_distribution.png)
 
 **Figure 2. Correlation Heatmap (Top 20 Numeric Features)**  
 Correlation is computed on up to 10,000 sampled rows when data is larger.
 
-![Figure 2. Correlation heatmap](file:///Users/victor/xwork/xAI/artifacts/figures/eda_correlation_heatmap.png)
+![Figure 2. Correlation heatmap](../artifacts/figures/eda_correlation_heatmap.png)
 
 ---
 
@@ -197,11 +197,11 @@ Source: model evaluation outputs from the frozen experiment run.
 
 **Figure 3. Baseline Confusion Matrix**
 
-![Figure 3. Baseline confusion matrix](file:///Users/victor/xwork/xAI/artifacts/figures/cm_baseline.png)
+![Figure 3. Baseline confusion matrix](../artifacts/figures/cm_baseline.png)
 
 **Figure 4. Black-Box Confusion Matrix**
 
-![Figure 4. Black-box confusion matrix](file:///Users/victor/xwork/xAI/artifacts/figures/cm_blackbox.png)
+![Figure 4. Black-box confusion matrix](../artifacts/figures/cm_blackbox.png)
 
 Security interpretation:
 
@@ -212,7 +212,7 @@ Security interpretation:
 
 **Figure 5. SHAP Summary Plot**
 
-![Figure 5. SHAP summary](file:///Users/victor/xwork/xAI/artifacts/figures/shap_summary.png)
+![Figure 5. SHAP summary](../artifacts/figures/shap_summary.png)
 
 Representative top global features from the SHAP importance outputs include:
 
@@ -224,19 +224,19 @@ Representative top global features from the SHAP importance outputs include:
 ### 4.4 Local Explanation Case Studies (5 SOC Cases)
 
 **Figure 6. SHAP Waterfall (sample_id=0, TN)**  
-![Figure 6. SHAP waterfall case 0](file:///Users/victor/xwork/xAI/artifacts/figures/shap_waterfall_case_0.png)
+![Figure 6. SHAP waterfall case 0](../artifacts/figures/shap_waterfall_case_0.png)
 
 **Figure 7. SHAP Waterfall (sample_id=1, TP)**  
-![Figure 7. SHAP waterfall case 1](file:///Users/victor/xwork/xAI/artifacts/figures/shap_waterfall_case_1.png)
+![Figure 7. SHAP waterfall case 1](../artifacts/figures/shap_waterfall_case_1.png)
 
 **Figure 8. SHAP Waterfall (sample_id=2, TP)**  
-![Figure 8. SHAP waterfall case 2](file:///Users/victor/xwork/xAI/artifacts/figures/shap_waterfall_case_2.png)
+![Figure 8. SHAP waterfall case 2](../artifacts/figures/shap_waterfall_case_2.png)
 
 **Figure 9. SHAP Waterfall (sample_id=16, FP)**  
-![Figure 9. SHAP waterfall case 16](file:///Users/victor/xwork/xAI/artifacts/figures/shap_waterfall_case_16.png)
+![Figure 9. SHAP waterfall case 16](../artifacts/figures/shap_waterfall_case_16.png)
 
 **Figure 10. SHAP Waterfall (sample_id=125, FN)**  
-![Figure 10. SHAP waterfall case 125](file:///Users/victor/xwork/xAI/artifacts/figures/shap_waterfall_case_125.png)
+![Figure 10. SHAP waterfall case 125](../artifacts/figures/shap_waterfall_case_125.png)
 
 FP interpretation example (sample_id=16): key local SHAP drivers include flow timing and port-related features (`Fwd IAT Std`, `Source Port`, `Destination Port`), while LIME emphasizes rule-form one-hot conditions. This mismatch should be disclosed as a method-level representation gap, not a contradiction in model logic.
 
@@ -268,7 +268,7 @@ Source: overfitting diagnostic outputs from the frozen experiment run.
 
 **Figure 11. F1 by Split**
 
-![Figure 11. F1 by split](file:///Users/victor/xwork/xAI/artifacts/figures/overfitting_f1_by_split.png)
+![Figure 11. F1 by split](../artifacts/figures/overfitting_f1_by_split.png)
 
 Observed split gaps are small, but the report should explicitly note that train/val/test all come from closely related distribution slices, which can overestimate production generalization.
 
