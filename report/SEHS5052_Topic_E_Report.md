@@ -114,7 +114,7 @@ Implementation entry point: the project's end-to-end experiment runner.
 | Rows after cleaning + sampling | 12,000 |
 | Raw feature columns (pre-one-hot) | 84 |
 
-Class distribution (from the frozen experiment outputs):
+Class distribution (from the current notebook-aligned outputs):
 
 | Class | Count |
 |---|---:|
@@ -151,24 +151,69 @@ Correlation is computed on up to 10,000 sampled rows when data is larger.
 ### 3.1 Baseline Model
 
 The baseline model is Logistic Regression with balanced class weights and the same preprocessing stack as the black-box model.  
-This provides a transparent linear reference model.
+This provides a transparent linear reference model [4].
+
+Key implementation snippet (preprocessing pipeline):
+
+```python
+numeric_pipe = Pipeline(
+    steps=[("imputer", SimpleImputer(strategy="median")),
+           ("scaler", StandardScaler())]
+)
+categorical_pipe = Pipeline(
+    steps=[("imputer", SimpleImputer(strategy="most_frequent")),
+           ("onehot", OneHotEncoder(handle_unknown="ignore"))]
+)
+preprocessor = ColumnTransformer(
+    transformers=[("num", numeric_pipe, numeric_cols),
+                  ("cat", categorical_pipe, categorical_cols)]
+)
+```
 
 ### 3.2 Black-Box Model
 
-The advanced model is Random Forest (`n_estimators=80`, `max_depth=16`, `min_samples_leaf=2`) with balanced subsampling.  
+The advanced model is Random Forest (`n_estimators=120`, `max_depth=20`, `min_samples_leaf=2`) with balanced subsampling.  
 The model is selected because:
 
-- it captures non-linear feature interactions in tabular intrusion data,
-- it supports SHAP TreeExplainer efficiently,
-- it provides strong practical performance with limited tuning.
+- it captures non-linear feature interactions in tabular intrusion data [4],
+- it supports SHAP TreeExplainer efficiently for tree-based models [1],
+- it provides strong practical performance with limited tuning in SOC-style tabular detection workflows [4].
+
+Key implementation snippet (model training + threshold selection):
+
+```python
+model = RandomForestClassifier(
+    n_estimators=120,
+    max_depth=20,
+    min_samples_leaf=2,
+    class_weight="balanced_subsample",
+    random_state=42,
+    n_jobs=-1,
+)
+pipe = Pipeline(steps=[("preprocessor", preprocessor), ("model", model)])
+pipe.fit(X_train, y_train)
+val_prob = pipe.predict_proba(X_val)[:, 1]
+threshold = select_threshold_by_f1(y_val, val_prob)
+```
 
 ### 3.3 Explainability Design (Topic E Core Requirement)
 
-Implemented in the explainability module:
+Implemented in the explainability module [1], [2]:
 
 - **SHAP global:** feature importance by mean absolute SHAP values,  
 - **SHAP local:** per-case contribution vectors and waterfall plots,  
 - **LIME local:** rule-like local explanations for the same selected case IDs.
+
+Key implementation snippet (SHAP global/local):
+
+```python
+explainer = shap.TreeExplainer(model)
+shap_values_global = explainer.shap_values(X_global)
+mean_abs = np.mean(np.abs(shap_values_global), axis=0)
+shap_global = pd.DataFrame(
+    {"feature": feature_names, "mean_abs_shap": mean_abs}
+).sort_values("mean_abs_shap", ascending=False)
+```
 
 ### 3.4 SOC Casebook Construction
 
@@ -178,13 +223,24 @@ Implemented in the SOC simulation module:
 - build a 5-case analyst-facing report (`build_soc_alert_report`),  
 - generate SHAP-vs-LIME comparison table and analyst utility metrics.
 
+Key implementation snippet (TP/FP/FN-aware case selection):
+
+```python
+case_ids, forced_case_types, case_thresholds, case_presence = choose_required_soc_cases(
+    y_true=y_test.reset_index(drop=True),
+    y_prob=blackbox_probs,
+    default_threshold=blackbox.threshold,
+    max_cases=5,
+)
+```
+
 ---
 
 ## 4. Evaluation and Topic-Specific Advanced Analysis
 
 ### 4.1 Comparative Performance (Test Set)
 
-Source: model evaluation outputs from the frozen experiment run.
+Source: model evaluation outputs from the current notebook-aligned run.
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|
@@ -212,7 +268,7 @@ Security interpretation:
 
 ![Figure 5. SHAP summary](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_summary.png)
 
-Representative top global features from the SHAP importance outputs include:
+Representative top global features from the SHAP importance outputs include [1]:
 
 - `cat__ Destination IP_192.168.10.50`,  
 - `num__ Avg Fwd Segment Size`,  
@@ -236,7 +292,7 @@ Representative top global features from the SHAP importance outputs include:
 **Figure 10. SHAP Waterfall (sample_id=3, TP)**  
 ![Figure 10. SHAP waterfall case 3](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_3.png)
 
-FP interpretation example (sample_id=103): key local SHAP drivers include endpoint identity and packet-length-related signals, while LIME emphasizes sparse rule-form one-hot conditions. This mismatch should be disclosed as a method-level representation gap, not a contradiction in model logic.
+FP interpretation example (sample_id=103): key local SHAP drivers include endpoint identity and packet-length-related signals, while LIME emphasizes sparse rule-form one-hot conditions [2]. This mismatch should be disclosed as a method-level representation gap, not a contradiction in model logic.
 
 ### 4.5 SHAP-LIME Agreement and Analyst Utility
 
@@ -249,11 +305,15 @@ From the run-level summary outputs:
 | ActionabilityScore | 0.8 |
 | FPReviewEfficiency | 0.4 |
 
-The current TopKAgreement is low because SHAP uses transformed feature names while LIME outputs rule strings, so direct lexical overlap is limited.
+The current TopKAgreement is low because SHAP uses transformed feature names while LIME outputs rule strings, so direct lexical overlap is limited [1], [2].
+
+### 4.5.1 Feature-Importance Bias (Topic E-specific)
+
+A key Topic E risk is feature-importance bias: high-ranking predictors may reflect environment-specific identifiers (e.g., endpoint/IP one-hot features) rather than stable attack semantics [1], [2]. In this run, identity-heavy features appear in local and global explanations, which can inflate apparent performance under similar network conditions but reduce portability across organizations. Operationally, this may over-prioritize alerts tied to known infrastructure patterns while under-explaining novel attack paths. To mitigate this, feature governance should include periodic review of explanation rankings, ablation checks for identity-dominant features, and re-training under drift-aware validation splits.
 
 ### 4.6 Overfitting Diagnostics
 
-Source: overfitting diagnostic outputs from the frozen experiment run.
+Source: overfitting diagnostic outputs from the current notebook-aligned run.
 
 | Model | Split | F1 |
 |---|---|---:|
@@ -292,9 +352,12 @@ Suggested deployment architecture:
 
 ### 5.3 Ethics and Compliance
 
-- enforce human oversight for high-impact response actions,  
-- minimize sensitive fields and adopt pseudonymization where feasible,  
-- retain model version, threshold, and explanation artifacts for auditability.
+| Compliance dimension | GDPR-style requirement | HIPAA-style requirement | Project control mapping |
+|---|---|---|---|
+| Lawfulness and purpose limitation | Data processing must have a lawful basis and clearly defined security purpose [5]. | Use/disclosure must be limited to permitted security operations under administrative safeguards [6]. | Restrict model inputs to SOC detection scope; avoid repurposing data for unrelated analytics. |
+| Data minimization and access control | Minimize personal data and restrict processing to necessary attributes [5]. | Apply minimum necessary access and role-based controls for ePHI-related telemetry [6]. | Keep only flow/security-relevant fields; enforce analyst RBAC in SOC tooling. |
+| Transparency, accountability, and auditability | Maintain accountable processing records and explainability for decisions affecting individuals [5]. | Maintain auditable security procedures and incident documentation [6]. | Retain model version, threshold, SHAP/LIME evidence, and case decisions for audit trails. |
+| Human oversight and risk management | Support human review for consequential automated decisions [5]. | Require operational safeguards and supervised incident response workflows [6]. | Enforce analyst-in-the-loop triage before blocking/escalation actions. |
 
 ### 5.4 Future Work
 
@@ -306,8 +369,15 @@ Suggested deployment architecture:
 
 ## References
 
-1. Lundberg, S. M., & Lee, S.-I. (2017). *A Unified Approach to Interpreting Model Predictions*. NeurIPS.  
-2. Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). *Why Should I Trust You? Explaining the Predictions of Any Classifier*. KDD.  
-3. Canadian Institute for Cybersecurity. CICIDS2017 Dataset Documentation. [https://www.unb.ca/cic/datasets/ids-2017.html](https://www.unb.ca/cic/datasets/ids-2017.html)  
-4. Pedregosa, F., et al. (2011). *Scikit-learn: Machine Learning in Python*. JMLR.
+[1] S. M. Lundberg and S.-I. Lee, "A Unified Approach to Interpreting Model Predictions," in *Proc. NeurIPS*, 2017.
+
+[2] M. T. Ribeiro, S. Singh, and C. Guestrin, "Why Should I Trust You? Explaining the Predictions of Any Classifier," in *Proc. ACM SIGKDD*, 2016, pp. 1135-1144.
+
+[3] Canadian Institute for Cybersecurity, "CICIDS2017 Dataset," University of New Brunswick. [Online]. Available: https://www.unb.ca/cic/datasets/ids-2017.html. [Accessed: Apr. 18, 2026].
+
+[4] F. Pedregosa *et al*., "Scikit-learn: Machine Learning in Python," *Journal of Machine Learning Research*, vol. 12, pp. 2825-2830, 2011.
+
+[5] European Parliament and Council of the European Union, "Regulation (EU) 2016/679 (General Data Protection Regulation)," Apr. 2016. [Online]. Available: https://eur-lex.europa.eu/eli/reg/2016/679/oj. [Accessed: Apr. 18, 2026].
+
+[6] U.S. Department of Health and Human Services, "HIPAA Security Rule (45 CFR Part 160 and Subparts A and C of Part 164)." [Online]. Available: https://www.hhs.gov/hipaa/for-professionals/security/index.html. [Accessed: Apr. 18, 2026].
 
