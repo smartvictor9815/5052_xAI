@@ -1,17 +1,17 @@
 {
   "baseline_test_metrics": {
-    "accuracy": 0.9997777777777778,
-    "precision": 0.9996045867931989,
+    "accuracy": 1.0,
+    "precision": 1.0,
     "recall": 1.0,
-    "f1": 0.9998022543009689,
+    "f1": 1.0,
     "roc_auc": 1.0
   },
   "blackbox_test_metrics": {
-    "accuracy": 0.9986666666666667,
-    "precision": 1.0,
-    "recall": 0.997626582278481,
-    "f1": 0.9988118811881188,
-    "roc_auc": 0.9999275858859477
+    "accuracy": 0.9983333333333333,
+    "precision": 0.9949664429530202,
+    "recall": 1.0,
+    "f1": 0.9974768713204374,
+    "roc_auc": 1.0
   },
   "analyst_metrics": {
     "ExplanationCoverage": 1.0,
@@ -20,14 +20,14 @@
     "FPReviewEfficiency": 0.4
   },
   "cicids_path": "data/cicids/TrafficLabelling /Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-  "sample_size": 30000,
-  "effective_rows": 30000,
-  "case_threshold": 0.37200000000000005,
+  "sample_size": 12000,
+  "effective_rows": 12000,
+  "case_threshold": 0.388,
   "case_presence": {
     "TP": true,
     "FP": true,
     "FN": true
   },
   "output_dir": "/Users/victor/xwork/xAI/artifacts",
-  "elapsed_seconds": 90.384
+  "elapsed_seconds": 26.957
 }

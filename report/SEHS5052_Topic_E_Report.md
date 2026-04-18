@@ -7,9 +7,7 @@
 
 - **Course:** SEHS5052 AI-driven Cybersecurity Management  
 - **Topic:** Topic E — Explainable AI (XAI) for Security Operations Centre Decision Support  
-- **Group Members:** `Name - Student ID` (fill for all members)  
 - **Google Colab Link (Viewer):** [SEHS5052_Group Project_Group10.ipynb](https://drive.google.com/file/d/19vEltqTcCUo41ROCJEFT-MbA2pFrHumb/view?usp=sharing)  
-- **Submission note:** verify the Colab link opens in private/incognito mode without sign-in.
 
 ---
 
@@ -19,7 +17,7 @@ This project builds an intrusion-detection decision-support workflow for SOC ana
 Two supervised models are implemented: a baseline Logistic Regression model and a black-box Random Forest model.  
 To address accountability and trust requirements in Topic E, the project integrates SHAP and LIME to provide global and case-level explanations, and generates a SOC alert report for five representative cases (including TP, FP, and FN).  
 
-Using a frozen run configuration (`max_rows=80000`, `sample_size=30000`, `rf_n_estimators=80`, `rf_max_depth=16`), the workflow achieves near-perfect metrics on the held-out split while preserving TP/FP/FN case coverage for analyst-oriented interpretation.
+Using the current notebook-aligned run configuration (`max_rows=30000`, `sample_size=12000`, `rf_n_estimators=120`, `rf_max_depth=20`), the workflow achieves near-perfect metrics on the held-out split while preserving TP/FP/FN case coverage for analyst-oriented interpretation.
 
 ---
 
@@ -113,15 +111,15 @@ Implementation entry point: the project's end-to-end experiment runner.
 | Dataset | CICIDS-2017 |
 | Source | [https://www.unb.ca/cic/datasets/ids-2017.html](https://www.unb.ca/cic/datasets/ids-2017.html) |
 | Input subset in this run | Friday afternoon traffic segment from CICIDS-2017 |
-| Rows after cleaning + sampling | 30,000 |
+| Rows after cleaning + sampling | 12,000 |
 | Raw feature columns (pre-one-hot) | 84 |
 
 Class distribution (from the frozen experiment outputs):
 
 | Class | Count |
 |---|---:|
-| Benign (0) | 13,148 |
-| Attack (1) | 16,852 |
+| Benign (0) | 8,044 |
+| Attack (1) | 3,956 |
 
 ### 2.2 Preprocessing Pipeline
 
@@ -190,8 +188,8 @@ Source: model evaluation outputs from the frozen experiment run.
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|
-| Logistic Regression (baseline) | 0.99978 | 0.99960 | 1.00000 | 0.99980 | 1.00000 |
-| Random Forest (black-box) | 0.99867 | 1.00000 | 0.99763 | 0.99881 | 0.99993 |
+| Logistic Regression (baseline) | 1.00000 | 1.00000 | 1.00000 | 1.00000 | 1.00000 |
+| Random Forest (black-box) | 0.99833 | 0.99497 | 1.00000 | 0.99748 | 1.00000 |
 
 ### 4.2 Confusion Matrix Analysis
 
@@ -223,22 +221,22 @@ Representative top global features from the SHAP importance outputs include:
 
 ### 4.4 Local Explanation Case Studies (5 SOC Cases)
 
-**Figure 6. SHAP Waterfall (sample_id=0, TN)**  
+**Figure 6. SHAP Waterfall (sample_id=0, TP)**  
 ![Figure 6. SHAP waterfall case 0](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_0.png)
 
-**Figure 7. SHAP Waterfall (sample_id=1, TP)**  
-![Figure 7. SHAP waterfall case 1](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_1.png)
+**Figure 7. SHAP Waterfall (sample_id=103, FP)**  
+![Figure 7. SHAP waterfall case 103](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_103.png)
 
-**Figure 8. SHAP Waterfall (sample_id=2, TP)**  
-![Figure 8. SHAP waterfall case 2](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_2.png)
+**Figure 8. SHAP Waterfall (sample_id=514, FN)**  
+![Figure 8. SHAP waterfall case 514](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_514.png)
 
-**Figure 9. SHAP Waterfall (sample_id=16, FP)**  
-![Figure 9. SHAP waterfall case 16](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_16.png)
+**Figure 9. SHAP Waterfall (sample_id=1, TN)**  
+![Figure 9. SHAP waterfall case 1](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_1.png)
 
-**Figure 10. SHAP Waterfall (sample_id=125, FN)**  
-![Figure 10. SHAP waterfall case 125](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_125.png)
+**Figure 10. SHAP Waterfall (sample_id=3, TP)**  
+![Figure 10. SHAP waterfall case 3](https://raw.githubusercontent.com/smartvictor9815/5052_xAI/master/artifacts/figures/shap_waterfall_case_3.png)
 
-FP interpretation example (sample_id=16): key local SHAP drivers include flow timing and port-related features (`Fwd IAT Std`, `Source Port`, `Destination Port`), while LIME emphasizes rule-form one-hot conditions. This mismatch should be disclosed as a method-level representation gap, not a contradiction in model logic.
+FP interpretation example (sample_id=103): key local SHAP drivers include endpoint identity and packet-length-related signals, while LIME emphasizes sparse rule-form one-hot conditions. This mismatch should be disclosed as a method-level representation gap, not a contradiction in model logic.
 
 ### 4.5 SHAP-LIME Agreement and Analyst Utility
 
@@ -259,12 +257,12 @@ Source: overfitting diagnostic outputs from the frozen experiment run.
 
 | Model | Split | F1 |
 |---|---|---:|
-| baseline | train | 1.00000 |
+| baseline | train | 0.99928 |
 | baseline | val | 1.00000 |
-| baseline | test | 0.99980 |
-| blackbox | train | 0.99941 |
-| blackbox | val | 0.99960 |
-| blackbox | test | 0.99881 |
+| baseline | test | 1.00000 |
+| blackbox | train | 0.99766 |
+| blackbox | val | 0.99916 |
+| blackbox | test | 0.99748 |
 
 **Figure 11. F1 by Split**
 
