@@ -44,3 +44,49 @@
 2026-04-18 19:14:31 | INFO | __main__ | Saved SHAP/LIME comparison table to /Users/victor/xwork/xAI/artifacts/tables/shap_lime_case_comparison.csv
 2026-04-18 19:14:31 | INFO | soc_simulation | Computed analyst metrics: {'ExplanationCoverage': 1.0, 'TopKAgreement': 0.0, 'ActionabilityScore': 0.8, 'FPReviewEfficiency': 0.4}
 2026-04-18 19:14:31 | INFO | __main__ | Run completed successfully in 95.57s
+2026-04-18 20:58:01 | INFO | __main__ | Starting experiment run with args={'cicids_path': None, 'cicids_label_col': 'Label', 'data_dir': 'data', 'max_rows': 80000, 'sample_size': 30000, 'class_balance_retry_cap': 300000, 'rf_n_estimators': 80, 'rf_max_depth': 16, 'rf_min_samples_leaf': 2, 'disable_lime': False, 'output_dir': 'artifacts', 'log_level': 'INFO', 'log_file': 'artifacts/full_pipeline.log'}
+2026-04-18 20:58:01 | INFO | __main__ | Artifacts directory prepared at /Users/victor/xwork/xAI/artifacts
+2026-04-18 20:58:01 | INFO | data_pipeline | Found existing dataset CSV: data/cicids/TrafficLabelling /Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+2026-04-18 20:58:01 | INFO | __main__ | Resolved CICIDS path: data/cicids/TrafficLabelling /Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+2026-04-18 20:58:01 | INFO | __main__ | Loading primary dataset from data/cicids/TrafficLabelling /Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+2026-04-18 20:58:02 | INFO | __main__ | Merged 1 CSV files from data/cicids
+2026-04-18 20:58:02 | INFO | data_pipeline | Mapped labels using ' Label': benign=35062 attack=44938
+2026-04-18 20:58:02 | INFO | data_pipeline | Basic cleaning completed: input=(80000, 84) output=(79998, 84) dropped_cols=0
+2026-04-18 20:58:02 | INFO | __main__ | Main dataset ready. features=84 rows=79998
+2026-04-18 20:58:02 | INFO | data_pipeline | Random sampled dataset: original=79998 sampled=30000 stratified=yes
+2026-04-18 20:58:02 | INFO | __main__ | Saved EDA outputs to artifacts/figures and artifacts/tables
+2026-04-18 20:58:02 | INFO | data_pipeline | Split sizes -> train=21000 val=4500 test=4500
+2026-04-18 20:58:02 | INFO | __main__ | Data split completed. Train labels distribution: {1: 11796, 0: 9204}
+2026-04-18 20:58:02 | INFO | train_models | Training baseline LogisticRegression model.
+2026-04-18 20:58:03 | INFO | train_models | Baseline trained. threshold=0.300 metrics={'accuracy': 1.0, 'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'roc_auc': 1.0}
+2026-04-18 20:58:03 | INFO | train_models | Training black-box RandomForest model (n_estimators=80, max_depth=16, min_samples_leaf=2).
+2026-04-18 20:58:03 | INFO | train_models | Black-box trained. threshold=0.440 metrics={'accuracy': 0.9995555555555555, 'precision': 1.0, 'recall': 0.9992088607594937, 'f1': 0.999604273842501, 'roc_auc': 0.9999644950188719}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 0.9997777777777778, 'precision': 0.9996045867931989, 'recall': 1.0, 'f1': 0.9998022543009689, 'roc_auc': 1.0}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 0.9986666666666667, 'precision': 1.0, 'recall': 0.997626582278481, 'f1': 0.9988118811881188, 'roc_auc': 0.9999275858859477}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 1.0, 'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'roc_auc': 1.0}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 1.0, 'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'roc_auc': 1.0}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 0.9997777777777778, 'precision': 0.9996045867931989, 'recall': 1.0, 'f1': 0.9998022543009689, 'roc_auc': 1.0}
+2026-04-18 20:58:03 | INFO | train_models | Evaluation metrics={'accuracy': 0.9993333333333333, 'precision': 0.9997455039022735, 'recall': 0.999067480501865, 'f1': 0.9994063772048847, 'roc_auc': 0.9999733168485432}
+2026-04-18 20:58:04 | INFO | train_models | Evaluation metrics={'accuracy': 0.9995555555555555, 'precision': 1.0, 'recall': 0.9992088607594937, 'f1': 0.999604273842501, 'roc_auc': 0.9999644950188719}
+2026-04-18 20:58:04 | INFO | train_models | Evaluation metrics={'accuracy': 0.9986666666666667, 'precision': 1.0, 'recall': 0.997626582278481, 'f1': 0.9988118811881188, 'roc_auc': 0.9999275858859477}
+2026-04-18 20:58:04 | INFO | __main__ | Saved overfitting diagnostics to /Users/victor/xwork/xAI/artifacts/tables/overfitting_diagnostics.csv
+2026-04-18 20:58:04 | INFO | __main__ | Saved metrics table to /Users/victor/xwork/xAI/artifacts/tables/model_metrics.csv
+2026-04-18 20:58:04 | INFO | __main__ | Saved confusion matrices under /Users/victor/xwork/xAI/artifacts/figures
+2026-04-18 20:58:04 | INFO | soc_simulation | Selected 5 SOC cases.
+2026-04-18 20:58:04 | INFO | soc_simulation | Required case coverage after selection: {'TP': True, 'FP': True, 'FN': True}
+2026-04-18 20:58:04 | INFO | __main__ | Selected case set TP/FP/FN presence={'TP': True, 'FP': True, 'FN': True}
+2026-04-18 20:58:04 | INFO | explainability | Starting explainability stage.
+2026-04-18 20:58:04 | INFO | explainability | Running SHAP explainability for 5 samples (top_k=8).
+2026-04-18 20:59:28 | INFO | explainability | Generated LIME local explanations for 5 samples.
+2026-04-18 20:59:28 | INFO | explainability | Explainability complete: shap_global=yes shap_local=5 lime_local=5
+2026-04-18 20:59:31 | INFO | explainability | Saved SHAP summary plot to artifacts/figures/shap_summary.png
+2026-04-18 20:59:32 | INFO | explainability | Saved 5 SHAP waterfall plots to artifacts/figures
+2026-04-18 20:59:32 | INFO | __main__ | Saved SHAP global importance to /Users/victor/xwork/xAI/artifacts/tables/shap_global_importance.csv
+2026-04-18 20:59:32 | INFO | __main__ | Saved SHAP summary plot to artifacts/figures/shap_summary.png
+2026-04-18 20:59:32 | INFO | __main__ | Saved 5 SHAP waterfall plots.
+2026-04-18 20:59:32 | INFO | soc_simulation | Built SOC alert report with 5 rows.
+2026-04-18 20:59:32 | INFO | __main__ | Saved SOC alert report to /Users/victor/xwork/xAI/artifacts/tables/soc_alert_report.csv
+2026-04-18 20:59:32 | INFO | soc_simulation | Built SHAP/LIME comparison table with 5 rows.
+2026-04-18 20:59:32 | INFO | __main__ | Saved SHAP/LIME comparison table to /Users/victor/xwork/xAI/artifacts/tables/shap_lime_case_comparison.csv
+2026-04-18 20:59:32 | INFO | soc_simulation | Computed analyst metrics: {'ExplanationCoverage': 1.0, 'TopKAgreement': 0.0, 'ActionabilityScore': 0.8, 'FPReviewEfficiency': 0.4}
+2026-04-18 20:59:32 | INFO | __main__ | Run completed successfully in 90.38s
