@@ -23,6 +23,5 @@ dist/
 .idea/
 .vscode/
 
-# Project runtime data and outputs (root only; report/artifacts may be a symlink for Markdown previews)
-/artifacts/
+# Project runtime data and inputs (root only; report/artifacts may be a symlink for Markdown previews)
 /data/
